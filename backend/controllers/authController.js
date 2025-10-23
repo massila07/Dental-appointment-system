@@ -24,7 +24,15 @@ const authController = {
             await user.save();
 
             const token = generateToken(user._id);
-            res.status(201).json({ token });
+            // Return user info + token so the client can store user and token
+            res.status(201).json({
+                _id: user._id,
+                nom: user.nom,
+                prenom: user.prenom,
+                email: user.email,
+                role: user.role,
+                token,
+            });
         } catch (error) {
             console.error('Erreur inscription:', error);
             // Gestion spécifique pour duplicate key (sécurité au cas où la vérification échouerait concurrentiellement)
@@ -58,9 +66,28 @@ const authController = {
             }
 
             const token = generateToken(user._id);
-            res.status(200).json({ token });
+            res.status(200).json({
+                _id: user._id,
+                nom: user.nom,
+                prenom: user.prenom,
+                email: user.email,
+                role: user.role,
+                token,
+            });
         } catch (error) {
             res.status(500).json({ message: "Erreur lors de la connexion" });
+        }
+    }
+    ,
+
+    // Retourne la liste des utilisateurs (sans mot de passe) - protégé
+    listUsers: async (req, res) => {
+        try {
+            const users = await User.find({}, '-motDePasse').sort({ createdAt: -1 });
+            res.status(200).json(users);
+        } catch (error) {
+            console.error('Erreur listUsers:', error);
+            res.status(500).json({ message: 'Erreur lors de la récupération des utilisateurs', error: error.message });
         }
     }
 };
@@ -68,4 +95,5 @@ const authController = {
 export default authController;
 export const registerPatient = authController.register;
 export const loginPatient = authController.login;
+export const listUsers = authController.listUsers;
 

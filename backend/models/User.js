@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['patient', 'staff']
+        enum: ['patient', 'staff'],
+        default: 'patient'
     }
 }, {
     timestamps: true // ajoute automatiquement les dates de création / mise à jour

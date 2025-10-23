@@ -1,15 +1,14 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
 
 const protect = async (req, res, next) => {
   try {
     let token;
 
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
+    // read Authorization header (case-insensitive)
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+
+    if (authHeader && typeof authHeader === 'string' && authHeader.toLowerCase().startsWith('bearer ')) {
+      token = authHeader.split(' ')[1];
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
